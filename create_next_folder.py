@@ -31,11 +31,13 @@ def create_next_available_folder(base_path, scene_name):
     else:
         raise FileNotFoundError(f"Source images folder not found: {src_images_path}")
 
-    return new_folder_path
+    print(f"Created new folder: {new_folder_path}")
+    return f"{scene_name}-t{n}"
 
+if __name__ == "__main__":
 
-# Example usage
-base_path = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\mydata"
-scene_name = "dji2"
-new_folder = create_next_available_folder(base_path, scene_name)
-print(f"Created new folder: {new_folder}")
+    # Example usage
+    base_path = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\mydata"
+    scene_name = "dji2"
+    new_folder = create_next_available_folder(base_path, scene_name)
+    print(f"Created new folder: {new_folder}")

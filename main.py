@@ -2,6 +2,7 @@ import json
 import subprocess
 import time
 import os
+from create_next_folder import create_next_available_folder
 
 def run_command(command, description):
     """Run a system command and measure its execution time."""
@@ -31,16 +32,19 @@ def fix_transforms_path(transforms_path):
 
 def main():
     # Paths (modify these according to your setup)
-    run_folder = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\mydata\dji2t5"
+    base_path = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\mydata"
+    scene_name = "dji2"
+    scene_name_version = create_next_available_folder(base_path, scene_name)
+    run_folder = os.path.join(base_path, scene_name_version)
     colmap_executable = r"C:\Users\amir\Documents\code\colmap-x64-windows-cuda\COLMAP.bat"
     image_dir = os.path.join(run_folder, "images")
     database_path = os.path.join(run_folder, "database.db")
     sparse_dir = os.path.join(run_folder, "sparse")
     text_output_dir = os.path.join(run_folder, "sparse-text")
-    colmap2nerf_script = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\scripts\colmap2nerf.py"
     transforms_output = os.path.join(run_folder, "transforms.json")
+    colmap2nerf_script = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\scripts\colmap2nerf.py"
     SiftExtraction_max_num_features = 32768
-    Mapper_ba_global_max_num_iterations = 100
+    Mapper_ba_global_max_num_iterations = 200
 
     # Ensure output directories exist
     os.makedirs(sparse_dir, exist_ok=True)
@@ -84,7 +88,9 @@ def main():
     colmap2nerf_time = run_command(colmap2nerf_cmd, "COLMAP to NeRF Conversion")
     fix_transforms_path(transforms_output)
     # Summary of execution times
-    print("Execution Time Summary:")
+    print(f"Execution Time Summary {scene_name_version}:")
+    print(f"SiftExtraction_max_num_features: {SiftExtraction_max_num_features}")
+    print(f"Mapper_ba_global_max_num_iterations: {Mapper_ba_global_max_num_iterations}")
     print(f"Feature Extraction: {feature_extraction_time:.2f} seconds")
     print(f"Feature Matching: {feature_matching_time:.2f} seconds")
     print(f"Sparse Reconstruction: {sparse_reconstruction_time:.2f} seconds")
