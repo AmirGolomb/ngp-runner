@@ -66,7 +66,9 @@ def main():
     # Step 2: Feature Matching
     feature_matching_cmd = (
         f'"{colmap_executable}" exhaustive_matcher --database_path "{database_path}" '
-        f'--SiftMatching.guided_matching 1'
+        # f'--SiftMatching.guided_matching 1'
+        # f'--TwoViewGeometry.multiple_models 1'
+
     )
     feature_matching_time = run_command(feature_matching_cmd, "Feature Matching")
 
@@ -100,7 +102,8 @@ def main():
     # print(f"SiftExtraction_peak_threshold: {SiftExtraction_peak_threshold}")
     print(f"Mapper_ba_global_max_num_iterations: {Mapper_ba_global_max_num_iterations}")
     print(f"SiftExtraction_max_image_size {SiftExtraction_max_image_size}")
-    print("SiftMatching.guided_matching 1")
+    # print("SiftMatching.guided_matching 1")
+    # print("TwoViewGeometry.multiple_models 1")
     print()
     print(f"Feature Extraction: {feature_extraction_time:.2f} seconds")
     print(f"Feature Matching: {feature_matching_time:.2f} seconds")
