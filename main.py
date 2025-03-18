@@ -44,7 +44,8 @@ def main():
     transforms_output = os.path.join(run_folder, "transforms.json")
     colmap2nerf_script = r"C:\Users\amir\Documents\code\Instant-NGP-for-RTX-3000-and-4000\scripts\colmap2nerf.py"
     SiftExtraction_max_num_features = 32768
-    Mapper_ba_global_max_num_iterations = 200
+    SiftExtraction_max_image_size = 1000000
+    Mapper_ba_global_max_num_iterations = 100
 
     # Ensure output directories exist
     os.makedirs(sparse_dir, exist_ok=True)
@@ -55,6 +56,8 @@ def main():
         f'"{colmap_executable}" feature_extractor --database_path "{database_path}" '
         f'--image_path "{image_dir}" --ImageReader.camera_model PINHOLE --ImageReader.single_camera 1 '
         f'--SiftExtraction.max_num_features {SiftExtraction_max_num_features} '
+        f'--SiftExtraction.max_image_size {SiftExtraction_max_image_size} '
+        f'--ImageReader.single_camera 1 '
     )
     feature_extraction_time = run_command(feature_extraction_cmd, "Feature Extraction")
 
@@ -82,7 +85,7 @@ def main():
     # Step 5: Convert COLMAP Output to NeRF Format
     colmap2nerf_cmd = (
         f'python "{colmap2nerf_script}" --text "{text_output_dir}" --images "{image_dir}" '
-        f'--out "{transforms_output}"'
+        f'--out "{transforms_output}" --aabb_scale "{8}"'
     )
 
     colmap2nerf_time = run_command(colmap2nerf_cmd, "COLMAP to NeRF Conversion")
@@ -91,11 +94,14 @@ def main():
     print(f"Execution Time Summary {scene_name_version}:")
     print(f"SiftExtraction_max_num_features: {SiftExtraction_max_num_features}")
     print(f"Mapper_ba_global_max_num_iterations: {Mapper_ba_global_max_num_iterations}")
+    print(f"SiftExtraction_max_image_size {SiftExtraction_max_image_size}")
+
     print(f"Feature Extraction: {feature_extraction_time:.2f} seconds")
     print(f"Feature Matching: {feature_matching_time:.2f} seconds")
     print(f"Sparse Reconstruction: {sparse_reconstruction_time:.2f} seconds")
     print(f"Model Conversion to Text Format: {model_converter_time:.2f} seconds")
     print(f"COLMAP to NeRF Conversion: {colmap2nerf_time:.2f} seconds")
+    print(f"Total: {feature_extraction_time+feature_matching_time+sparse_reconstruction_time+model_converter_time+colmap2nerf_time:.2f} seconds")
 
 if __name__ == "__main__":
     main()
