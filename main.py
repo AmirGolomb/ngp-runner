@@ -46,6 +46,7 @@ def main():
     SiftExtraction_max_num_features = 32768
     SiftExtraction_max_image_size = 1000000
     Mapper_ba_global_max_num_iterations = 100
+    # SiftExtraction_peak_threshold = 0.00666 * 0.8
 
     # Ensure output directories exist
     os.makedirs(sparse_dir, exist_ok=True)
@@ -55,15 +56,17 @@ def main():
     feature_extraction_cmd = (
         f'"{colmap_executable}" feature_extractor --database_path "{database_path}" '
         f'--image_path "{image_dir}" --ImageReader.camera_model PINHOLE --ImageReader.single_camera 1 '
-        f'--SiftExtraction.max_num_features {SiftExtraction_max_num_features} '
-        f'--SiftExtraction.max_image_size {SiftExtraction_max_image_size} '
-        f'--ImageReader.single_camera 1 '
+        f'--SiftExtraction.max_num_features "{SiftExtraction_max_num_features}" '
+        f'--SiftExtraction.max_image_size "{SiftExtraction_max_image_size}" '
+        # f'--SiftExtraction.peak_threshold "{SiftExtraction_peak_threshold}" '
+        # f'--SiftExtraction.num_octaves 8 '
     )
     feature_extraction_time = run_command(feature_extraction_cmd, "Feature Extraction")
 
     # Step 2: Feature Matching
     feature_matching_cmd = (
-        f'"{colmap_executable}" exhaustive_matcher --database_path "{database_path}"'
+        f'"{colmap_executable}" exhaustive_matcher --database_path "{database_path}" '
+        f'--SiftMatching.guided_matching 1'
     )
     feature_matching_time = run_command(feature_matching_cmd, "Feature Matching")
 
@@ -91,11 +94,14 @@ def main():
     colmap2nerf_time = run_command(colmap2nerf_cmd, "COLMAP to NeRF Conversion")
     fix_transforms_path(transforms_output)
     # Summary of execution times
+    print()
     print(f"Execution Time Summary {scene_name_version}:")
     print(f"SiftExtraction_max_num_features: {SiftExtraction_max_num_features}")
+    # print(f"SiftExtraction_peak_threshold: {SiftExtraction_peak_threshold}")
     print(f"Mapper_ba_global_max_num_iterations: {Mapper_ba_global_max_num_iterations}")
     print(f"SiftExtraction_max_image_size {SiftExtraction_max_image_size}")
-
+    print("SiftMatching.guided_matching 1")
+    print()
     print(f"Feature Extraction: {feature_extraction_time:.2f} seconds")
     print(f"Feature Matching: {feature_matching_time:.2f} seconds")
     print(f"Sparse Reconstruction: {sparse_reconstruction_time:.2f} seconds")
@@ -105,3 +111,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# --TwoViewGeometry.multiple_models 1
+# --TwoViewGeometry.confidence 0.9999
+# --TwoViewGeometry.max_num_trials 100000
