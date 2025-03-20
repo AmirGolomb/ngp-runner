@@ -46,6 +46,8 @@ def main():
     SiftExtraction_max_num_features = 32768
     SiftExtraction_max_image_size = 1000000
     Mapper_ba_global_max_num_iterations = 100
+    Mapper_ba_local_max_num_iterations = 100
+    ImageReader_mask_path = r"images_masks"
     # SiftExtraction_peak_threshold = 0.00666 * 0.8
 
     # Ensure output directories exist
@@ -58,6 +60,7 @@ def main():
         f'--image_path "{image_dir}" --ImageReader.camera_model PINHOLE --ImageReader.single_camera 1 '
         f'--SiftExtraction.max_num_features "{SiftExtraction_max_num_features}" '
         f'--SiftExtraction.max_image_size "{SiftExtraction_max_image_size}" '
+        # f'--ImageReader.mask_path "{ImageReader_mask_path}" '
         # f'--SiftExtraction.peak_threshold "{SiftExtraction_peak_threshold}" '
         # f'--SiftExtraction.num_octaves 8 '
     )
@@ -68,6 +71,7 @@ def main():
         f'"{colmap_executable}" exhaustive_matcher --database_path "{database_path}" '
         # f'--SiftMatching.guided_matching 1'
         # f'--TwoViewGeometry.multiple_models 1'
+        # f'--TwoViewGeometry.confidence 0.9999 '
 
     )
     feature_matching_time = run_command(feature_matching_cmd, "Feature Matching")
@@ -76,6 +80,7 @@ def main():
     sparse_reconstruction_cmd = (
         f'"{colmap_executable}" mapper --database_path "{database_path}" '
         f'--image_path "{image_dir}" --output_path "{sparse_dir}" '
+        f'--Mapper.ba_local_max_num_iterations {Mapper_ba_local_max_num_iterations} '
         f'--Mapper.ba_global_max_num_iterations {Mapper_ba_global_max_num_iterations} '
     )
     sparse_reconstruction_time = run_command(sparse_reconstruction_cmd, "Sparse Reconstruction")
@@ -101,7 +106,10 @@ def main():
     print(f"SiftExtraction_max_num_features: {SiftExtraction_max_num_features}")
     # print(f"SiftExtraction_peak_threshold: {SiftExtraction_peak_threshold}")
     print(f"Mapper_ba_global_max_num_iterations: {Mapper_ba_global_max_num_iterations}")
+    print(f"Mapper_ba_local_max_num_iterations: {Mapper_ba_local_max_num_iterations}")
     print(f"SiftExtraction_max_image_size {SiftExtraction_max_image_size}")
+    # print(f'--TwoViewGeometry.confidence 0.9999')
+    # print('using masks .jpg.png')
     # print("SiftMatching.guided_matching 1")
     # print("TwoViewGeometry.multiple_models 1")
     print()
